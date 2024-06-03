@@ -12,8 +12,8 @@ genDepth = 0
 layer = False
 widthMultiple = screen.get_width()/chunkSize
 heightMultiple = screen.get_height()/chunkSize
-b = "5678"
-s = "45678"
+b = "3"
+s = "12345"
 
 chunk = np.random.randint(0,2,size=(chunkSize,chunkSize,2))
 #chunk = np.zeros((chunkSize,chunkSize,2))
@@ -82,7 +82,7 @@ while running:
                 pygame.draw.line(screen, "gray", (0, y*heightMultiple), (widthMultiple*chunkSize, y*heightMultiple))
             if chunk[x][y][0] == 1:
                 if (x % 2 == 0 and y % 2 != 0) or (y % 2 == 0 and x % 2 != 0):
-                    clr = "gray40"
+                    clr = "white"
                 else:
                     clr = "white"
                 pygame.draw.rect(screen, clr, pygame.Rect(x*widthMultiple, y*heightMultiple, widthMultiple, heightMultiple))
