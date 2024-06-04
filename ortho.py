@@ -7,13 +7,13 @@ pygame.init()
 screen = pygame.display.set_mode((500, 500))
 clock = pygame.time.Clock()
 running = True
-chunkSize = 20
+chunkSize = 75
 genDepth = 0
 layer = False
 widthMultiple = screen.get_width()/chunkSize
 heightMultiple = screen.get_height()/chunkSize
-b = "3"
-s = "12345"
+b = "5678"
+s = "45678"
 
 chunk = np.random.randint(0,2,size=(chunkSize,chunkSize,2))
 #chunk = np.zeros((chunkSize,chunkSize,2))
