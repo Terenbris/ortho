@@ -11,7 +11,7 @@ temp = ortho.outLife("5678","45678",70,100)
 
 temp = maze.initMaze(temp, -2, -2)
 maze.genEnd()
-maze.keySpawn()
+maze.keySpawn(len(temp))
 
 while running:
     # poll for events

@@ -1,7 +1,7 @@
 import numpy as np
 import pygame
 
-size = 3
+size = 5
 size*=3
 board = np.zeros((size, size))
 stack = [[]]
@@ -49,6 +49,8 @@ def genMaze():
     stack.append([1,1])
     while len(stack) > 1:
         move()
+    genEnd()
+    keySpawn()
 
 def genEnd():
     board[player[0][0]][player[0][1]] = 5
@@ -69,9 +71,7 @@ def genEnd():
     board[player[0][0]][player[0][1]] = 1
 
 def keySpawn():
-    global keyReq
     global keysHeld
-    keyReq = True
     k = nKey
     keysHeld = 0
     while k > 0:
@@ -127,33 +127,33 @@ def movement():
             genMaze()
 
     # Example file showing a basic pygame "game loop"
+genMaze()
+#def initMaze(array,x,y):
+#    global board
+#    global stack
+#    stack.append([x,y])
+#    board = array
+#    genMaze()
+#    return board
 
-def initMaze(array,x,y):
-    global board
-    global stack
-    stack.append([x,y])
-    board = array
-    genMaze()
-    return board
 
-
-#while running:
+while running:
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
-    #for event in pygame.event.get():
-        #if event.type == pygame.QUIT:
-            #running = False
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
 
     # fill the screen with a color to wipe away anything from last frame
     
-    #movement()
+    movement()
 
     # RENDER YOUR GAME HERE
-    #drawScreen()
+    drawScreen()
     
     # flip() the display to put your work on screen
-    #pygame.display.flip()
+    pygame.display.flip()
 
-    #clock.tick(12)  # limits FPS to 60
+    clock.tick(12)  # limits FPS to 60
 
-#pygame.quit()
+pygame.quit()
