@@ -1,21 +1,24 @@
 import numpy as np
 import pygame
 
-size = 5
+size = 3
 size*=3
 board = np.zeros((size, size))
 stack = [[]]
 player = [[1,1]]
+keysHeld = 0
+keyReq = True
+nKey = 3
 
 # pygame setup
-pygame.init()
-screen = pygame.display.set_mode((1280, 720))
+#pygame.init()
+screen = pygame.display.set_mode((300, 300))
 clock = pygame.time.Clock()
 running = True
+tl = 0
 widthMultiple = screen.get_width()/size
 heightMultiple = screen.get_height()/size
 
-stack.append([1,1])
 
 #print(stack.pop())
 
@@ -43,57 +46,46 @@ def move():
 
 
 def genMaze():
-    board = np.zeros((size, size))
-    stack = [[]]
-    stack.append()
+    stack.append([1,1])
     while len(stack) > 1:
         move()
-    if board[-2][-2] == 5:
-        board[1][1] = 6
-    else:
-        board[-2][-2] = 6
-        #print(board)
+
+def genEnd():
+    board[player[0][0]][player[0][1]] = 5
+    tl = np.random.randint(4)
+    for z in range(4):
+        if tl == 0 and board[1][1] != 5:
+            board[1][1] = 6
+        elif tl == 1 and board[1][-2] != 5:
+            board[1][-2] = 6
+        elif tl == 2 and board[-2][1] != 5:
+            board[-2][1] = 6
+        elif tl == 3 and board[-2][-2] != 5:
+            board[-2][-2] = 6
+        else:
+            tl += 1
+            if tl > 3:
+                tl = 0
+    board[player[0][0]][player[0][1]] = 1
+
 def keySpawn():
-    k = 4
+    global keyReq
+    global keysHeld
+    keyReq = True
+    k = nKey
+    keysHeld = 0
     while k > 0:
         tx = np.random.randint(size-1)
         ty = np.random.randint(size-1)
         if board[tx][ty] == 1:
             board[tx][ty] = 3
             k-=1
-        
-genMaze()
 
-    # Example file showing a basic pygame "game loop"
-
-
-
-while running:
-    # poll for events
-    # pygame.QUIT event means the user clicked X to close your window
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-    # fill the screen with a color to wipe away anything from last frame
+def drawScreen(s=size, screen=pygame.display.set_mode((300, 300))):
+    size = s
+    widthMultiple = screen.get_width()/size
+    heightMultiple = screen.get_height()/size
     screen.fill("black")
-
-    board[player[0][0]][player[0][1]] = 1
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_w] and board[player[0][0]][player[0][1] - 1] != 0:
-        player[0][1] -= 1
-    if keys[pygame.K_s] and board[player[0][0]][player[0][1] + 1] != 0:
-        player[0][1] += 1
-    if keys[pygame.K_a] and board[player[0][0] - 1][player[0][1]] != 0:
-        player[0][0] -= 1
-    if keys[pygame.K_d] and board[player[0][0] + 1][player[0][1]] != 0:
-        player[0][0] += 1
-    if board[player[0][0]][player[0][1]]  == 6:
-        board[player[0][0]][player[0][1]] = 5
-        genMaze()
-    board[player[0][0]][player[0][1]] = 5
-
-    # RENDER YOUR GAME HERE
     for x in range(size):
         for y in range(size):
             if size < 150:
@@ -106,15 +98,62 @@ while running:
                     clr = "white"
                 pygame.draw.rect(screen, clr, pygame.Rect(x*widthMultiple, y*heightMultiple, widthMultiple, heightMultiple))
             elif board[x][y] == 3:
-                pygame.draw.rect(screen, "yellow", pygame.Rect(x*widthMultiple, y*heightMultiple, widthMultiple, heightMultiple))
-            elif board[x][y] == 5:
-                pygame.draw.rect(screen, "purple", pygame.Rect(x*widthMultiple, y*heightMultiple, widthMultiple, heightMultiple))
+                pygame.draw.rect(screen, "orange", pygame.Rect(x*widthMultiple, y*heightMultiple, widthMultiple, heightMultiple))
             elif board[x][y] == 6:
                 pygame.draw.rect(screen, "green", pygame.Rect(x*widthMultiple, y*heightMultiple, widthMultiple, heightMultiple))
+            
+            pygame.draw.rect(screen, "purple", pygame.Rect(player[0][0]*widthMultiple, player[0][1]*heightMultiple, widthMultiple, heightMultiple))
 
+def movement():
+    global keysHeld
+    global board
+    if board[player[0][0]][player[0][1]] == 3 and keyReq:
+        keysHeld += 1
+        board[player[0][0]][player[0][1]] = 1
+
+    #board[player[0][0]][player[0][1]] = 1
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_UP] and 0 < player[0][1] and board[player[0][0]][player[0][1] - 1] != 0:
+        player[0][1] -= 1
+    if keys[pygame.K_DOWN] and player[0][1] < len(board)-1 and board[player[0][0]][player[0][1] + 1] != 0:
+        player[0][1] += 1
+    if keys[pygame.K_LEFT] and 0 < player[0][0] and board[player[0][0] - 1][player[0][1]] != 0:
+        player[0][0] -= 1
+    if keys[pygame.K_RIGHT] and player[0][0] < len(board)-1 and  board[player[0][0] + 1][player[0][1]] != 0:
+        player[0][0] += 1
+    if board[player[0][0]][player[0][1]]  == 6:
+        if (keyReq and keysHeld == nKey) or not(keyReq):
+            board = np.zeros((size, size))
+            genMaze()
+
+    # Example file showing a basic pygame "game loop"
+
+def initMaze(array,x,y):
+    global board
+    global stack
+    stack.append([x,y])
+    board = array
+    genMaze()
+    return board
+
+
+#while running:
+    # poll for events
+    # pygame.QUIT event means the user clicked X to close your window
+    #for event in pygame.event.get():
+        #if event.type == pygame.QUIT:
+            #running = False
+
+    # fill the screen with a color to wipe away anything from last frame
+    
+    #movement()
+
+    # RENDER YOUR GAME HERE
+    #drawScreen()
+    
     # flip() the display to put your work on screen
-    pygame.display.flip()
+    #pygame.display.flip()
 
-    clock.tick(12)  # limits FPS to 60
+    #clock.tick(12)  # limits FPS to 60
 
-pygame.quit()
+#pygame.quit()
