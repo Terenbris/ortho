@@ -12,7 +12,7 @@ nKey = 5
 
 # pygame setup
 #pygame.init()
-screen = pygame.display.set_mode((300, 300))
+screen = pygame.display.set_mode((600, 600))
 clock = pygame.time.Clock()
 running = True
 tl = 0
@@ -45,8 +45,8 @@ def move():
         stack.append([unv[mov][0],unv[mov][1]])
 
 
-def genMaze(ap = [1,1]):
-    stack.append(ap)
+def genMaze(start = [1,1]):
+    stack.append(start) 
     while len(stack) > 1:
         move()
     genEnd()
@@ -125,7 +125,7 @@ def movement():
     if board[player[0][0]][player[0][1]]  == 6:
         if (keyReq and keysHeld == nKey) or not(keyReq):
             board = np.zeros((size, size))
-            genMaze()
+            genMaze([player[0][0],player[0][1]])
 
     # Example file showing a basic pygame "game loop"
 genMaze()
