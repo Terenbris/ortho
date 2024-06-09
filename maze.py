@@ -1,14 +1,14 @@
 import numpy as np
 import pygame
 
-size = 5
+size = 3
 size*=3
 board = np.zeros((size, size))
 stack = [[]]
 player = [[1,1]]
 keysHeld = 0
-keyReq = True
-nKey = 3
+keyReq = False
+nKey = 5
 
 # pygame setup
 #pygame.init()
@@ -50,7 +50,8 @@ def genMaze(start = [1,1]):
     while len(stack) > 1:
         move()
     genEnd()
-    keySpawn()
+    if keyReq:
+        keySpawn()
 
 def genEnd():
     board[player[0][0]][player[0][1]] = 5
@@ -81,7 +82,7 @@ def keySpawn():
             board[tx][ty] = 3
             k-=1
 
-def drawScreen(s=size, screen=pygame.display.set_mode((300, 300))):
+def drawScreen(s=size, screen=pygame.display.set_mode((600, 600))):
     size = s
     widthMultiple = screen.get_width()/size
     heightMultiple = screen.get_height()/size
@@ -128,13 +129,12 @@ def movement():
 
     # Example file showing a basic pygame "game loop"
 genMaze()
-#def initMaze(array,x,y):
-#    global board
-#    global stack
-#    stack.append([x,y])
-#    board = array
-#    genMaze()
-#    return board
+def initMaze(array,x,y):
+    global board
+    global stack
+    board = array
+    genMaze([x,y])
+    return board
 
 
 while running:
