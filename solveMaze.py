@@ -1,64 +1,80 @@
 import numpy as np
-import maze
+#import maze
 
 size = 9
 done = False
-board = np.zeros((size,size))
-board = maze.initMaze(board, 1, 1)
+#board = np.zeros((size,size))
+#board = maze.initMaze(board, 1, 1)
 stack = []
-print(board)
+sboard = []
 
 def checkUnvisited(x, y, end):
     temp = []
     for i in range(-1,2):
         for j in range(-1,2):
-            if 0 < x+i < len(board) and 0 < y+j < len(board) and (i == 0 or j == 0) and board[x+i][y+j] == 1 or board[x+i][y+j] == 6:
-                if board[x+i][y+j] == 6 and end:
+            if 0 < x+i < len(sboard) and 0 < y+j < len(sboard) and (i == 0 or j == 0) and sboard[x+i][y+j] != 0:
+                if sboard[x+i][y+j] == 6 and end:
                     print("done")
                     temp = [[x+i,y+j,1]]
                     return temp
+                elif sboard[x+i][y+j] == 9:
+                    temp.append([x+i,y+j,2])
                 else:
                     temp.append([x+i,y+j,0])
     return temp
 
-
-
 def move(end):
+    global stack
     global done
     temp = stack.pop()
-    stack.append(temp)
-    unv = checkUnvisited(temp[0],temp[1], end)
-    if (len(unv)) == 0:
-        tstack = stack
+    stack.append(temp[:])
+    unv = []
+    unvtemp = checkUnvisited(temp[0],temp[1], end)
+    for x in unvtemp:
+        if x[2] != 2:
+            #print(stack)
+            unv.append(x[:])
+    print(unv)
+    if len(unv) == 0:
+        tstack = np.copy(stack)
         stack.pop()
-        #print(tstack)
         return tstack
     else:
         mov = np.random.randint(len(unv))-1
-        board[unv[mov][0]][unv[mov][1]] = 9
+        sboard[unv[mov][0]][unv[mov][1]] = 9
         stack.append([unv[mov][0],unv[mov][1]])
         if unv[mov][2] == 1:
             done = True
             return stack
 
-def solve(board,playerPos):
-    board[playerPos[0]][playerPos[1]] = 9
+def solve(sboard,playerPos):
+    sboard[playerPos[0]][playerPos[1]] = 9
     stack.append(playerPos)
     while not(done):
         move(True)
 
-def solveLength(board,playerPos,k):
+def keyFunc(e):
+    return len(str(e))
+
+def solveLength(b,playerPos):
+    global sboard
+    sboard = np.copy(b)
     ends = []
-    board[playerPos[0]][playerPos[1]] = 9
+    sboard[playerPos[0]][playerPos[1]] = 9
     stack.append(playerPos)
     move(False)
     while len(stack) > 1:
         temp = move(False)
         #print(temp)
-        if temp:
+        if temp != []:
             ends.append(temp)
-            print(ends)
+    if len(ends) > 1:
+        print(ends)
+        ends.sort(key=keyFunc)
+    print(sboard)
+    #print()
+    return ends
 
 
-solveLength(board, [1,1], 1)
+#solveLength(board, [1,1])
 

@@ -1,5 +1,6 @@
 import numpy as np
 import pygame
+import solveMaze as sm
 
 size = 3
 size*=3
@@ -9,6 +10,7 @@ player = [[1,1]]
 keysHeld = 0
 keyReq = False
 nKey = 5
+ends = []
 
 # pygame setup
 #pygame.init()
@@ -46,30 +48,28 @@ def move():
 
 
 def genMaze(ap = [1,1]):
+    global ends
     stack.append(ap)
     while len(stack) > 1:
         move()
+    ends = sm.solveLength(board[:], ap)
     genEnd()
     if keyReq:
         keySpawn()
+    for x in board:
+        for y in x:
+            if int(y) == 9:
+                print(y)
+            print(board)
 
 def genEnd():
-    board[player[0][0]][player[0][1]] = 5
-    tl = np.random.randint(4)
-    for z in range(4):
-        if tl == 0 and board[1][1] != 5:
-            board[1][1] = 6
-        elif tl == 1 and board[1][-2] != 5:
-            board[1][-2] = 6
-        elif tl == 2 and board[-2][1] != 5:
-            board[-2][1] = 6
-        elif tl == 3 and board[-2][-2] != 5:
-            board[-2][-2] = 6
-        else:
-            tl += 1
-            if tl > 3:
-                tl = 0
-    board[player[0][0]][player[0][1]] = 1
+    global board
+    global ends
+    temp = ends[-1]
+    temp = temp[-1]
+    ends = np.delete(ends, -1)
+    board[temp[0]][temp[1]] = 6
+    print(board)
 
 def keySpawn():
     global keysHeld
@@ -82,7 +82,7 @@ def keySpawn():
             board[tx][ty] = 3
             k-=1
 
-def drawScreen(s=size, screen=pygame.display.set_mode((600, 600))):
+def drawScreen(s=size, screen=pygame.display.set_mode((300, 300))):
     size = s
     widthMultiple = screen.get_width()/size
     heightMultiple = screen.get_height()/size
@@ -125,7 +125,8 @@ def movement():
     if board[player[0][0]][player[0][1]]  == 6:
         if (keyReq and keysHeld == nKey) or not(keyReq):
             board = np.zeros((size, size))
-            genMaze()
+            print([player[0][0],player[0][1]])
+            genMaze([player[0][0],player[0][1]])
 
     # Example file showing a basic pygame "game loop"
 genMaze()
