@@ -5,7 +5,7 @@ size = 9
 done = False
 #board = np.zeros((size,size))
 #board = maze.initMaze(board, 1, 1)
-stack = []
+stack = [[]]
 sboard = []
 
 def checkUnvisited(x, y, end):
@@ -21,8 +21,10 @@ def checkUnvisited(x, y, end):
                     temp.append([x+i,y+j,2])
                 else:
                     temp.append([x+i,y+j,0])
+    for x in temp[:]:
+        if x[2] == 2:
+            temp.remove(x)
     return temp
-
 def move(end):
     global stack
     global done
@@ -34,11 +36,14 @@ def move(end):
         if x[2] != 2:
             #print(stack)
             unv.append(x[:])
-    print(unv)
+    #print(unv)
     if len(unv) == 0:
         tstack = np.copy(stack)
         stack.pop()
         return tstack
+    elif unv[0][2] == 3:
+        print("blocked")
+        return None
     else:
         mov = np.random.randint(len(unv))-1
         sboard[unv[mov][0]][unv[mov][1]] = 9
@@ -69,9 +74,8 @@ def solveLength(b,playerPos):
         if temp != []:
             ends.append(temp)
     if len(ends) > 1:
-        print(ends)
         ends.sort(key=keyFunc)
-    print(sboard)
+    #print(sboard)
     #print()
     return ends
 

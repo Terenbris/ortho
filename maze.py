@@ -15,6 +15,7 @@ ends = []
 # pygame setup
 #pygame.init()
 screen = pygame.display.set_mode((300, 300))
+screenSize = 100
 clock = pygame.time.Clock()
 running = True
 tl = 0
@@ -29,13 +30,12 @@ def checkUnvisited(x, y):
     temp = []
     for i in range(-1,2):
         for j in range(-1,2):
-            if 0 < x+(i*2) < len(board) and 0 < y+(j*2) < len(board) and (i == 0 or j == 0) and board[x+(i*2)][y+(j*2)] == 0:
+            if 0 < x+(i*2) < len(board) and 0 < y+(j*2) < len(board) and (i == 0 or j == 0) and board[x+(i*2)][y+(j*2)] == 0 and board[x+i][y+j] == 0:
                 temp.append([x+(i*2),y+(j*2),x+i,y+j])
     return temp
 
 def move():
-    temp = stack.pop()
-    stack.append(temp)
+    temp = stack[-1]
     unv = checkUnvisited(temp[0],temp[1])
     if (len(unv)) == 0:
         stack.pop()
@@ -53,6 +53,10 @@ def genMaze(ap = [1,1]):
     while len(stack) > 1:
         move()
     ends = sm.solveLength(board[:], ap)
+    for x in ends:
+        if x is not None:
+            #print(x[-1])
+            break
     genEnd()
     if keyReq:
         keySpawn()
@@ -60,7 +64,7 @@ def genMaze(ap = [1,1]):
         for y in x:
             if int(y) == 9:
                 print(y)
-            print(board)
+            #print(board)
 
 def genEnd():
     global board
@@ -69,7 +73,7 @@ def genEnd():
     temp = temp[-1]
     ends = np.delete(ends, -1)
     board[temp[0]][temp[1]] = 6
-    print(board)
+    #print(board)
 
 def keySpawn():
     global keysHeld
@@ -82,7 +86,7 @@ def keySpawn():
             board[tx][ty] = 3
             k-=1
 
-def drawScreen(s=size, screen=pygame.display.set_mode((300, 300))):
+def drawScreen(s=size, screen=pygame.display.set_mode((screenSize, screenSize))):
     size = s
     widthMultiple = screen.get_width()/size
     heightMultiple = screen.get_height()/size
@@ -125,7 +129,7 @@ def movement():
     if board[player[0][0]][player[0][1]]  == 6:
         if (keyReq and keysHeld == nKey) or not(keyReq):
             board = np.zeros((size, size))
-            print([player[0][0],player[0][1]])
+            #print([player[0][0],player[0][1]])
             genMaze([player[0][0],player[0][1]])
 
     # Example file showing a basic pygame "game loop"
